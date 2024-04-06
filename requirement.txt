@@ -1,0 +1,13 @@
+1. Staking feature On Admin Panel
+-    * Admin can check totoal Stake Amount till now. 
+-    * Admin can see the total Unstake Amoun till now. 
+-    * Admin can see the all the staking details. 
+-    * Admin can change the staking plan. (Smart Contract)
+    * Admin can add new plan. (Smart Contract)
+    * Admin can remove existing plan. (Smart Contract)
+-    * Withdraw and Deposit Fund on Staking Contract. 
+* Admin can see the stake details by user id or wallet address. 
+    
+
+
+

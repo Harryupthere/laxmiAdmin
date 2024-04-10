@@ -10,7 +10,7 @@ import AstroPanel from "./components/dashboard/AstroPanel";
 import ICOPanel from "./components/dashboard/ICOPanel";
 import StakePanel from "./components/dashboard/StakePanel";
 import Users from "./components/dashboard/Users";
-
+import PreICOPanel from "./components/dashboard/PreICOPanel";
 
 function App() {
   return (
@@ -30,6 +30,8 @@ function App() {
                 element={<AstroPanel />}
               />
               <Route path="ico-panel" element={<ICOPanel />} />
+              <Route path="pre-ico-panel" element={<PreICOPanel />} />
+
               <Route path="stake-panel" element={<StakePanel />} />
               <Route path="users" element={<Users />} />
             </Route>

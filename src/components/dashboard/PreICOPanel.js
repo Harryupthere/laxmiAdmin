@@ -5,7 +5,7 @@ import { FaCoins } from "react-icons/fa";
 import { FaSackDollar } from "react-icons/fa6";
 import { RiArrowDownCircleFill, RiArrowUpCircleFill } from "react-icons/ri";
 import { IoIosNotifications } from "react-icons/io";
-import IcoTable from "./IcoTable";
+import PreIcoTable from "./PreIcoTable";
 import {getParams,withdrawToken,withdrawMatic} from "../web/web3";
 import toast, { Toaster } from "react-hot-toast";
 import config from "../../config";
@@ -13,8 +13,7 @@ import axios from 'axios';
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie'; // Import js-cookie library
 import web3config from "../web/web3config";
-
-const ICOPanel = () => {
+const PreICOPanel = () => {
   const navigate = useNavigate();
 
   const loginStatus = Cookies.get('loginStatus');
@@ -32,11 +31,9 @@ const ICOPanel = () => {
   const [tokenWithdrawAmount,setTokenWithdrawAmount]=useState("")
   const [walletAddress2,setWalletAddress2]=useState("")
   const [tokenWithdrawAmount2,setTokenWithdrawAmount2]=useState("")
-  const [singleInput,setSingleInput]=useState('')
-
-  const [totalClaim,setTotalClaimed] = useState([{"totalClaimed":0}])
   const [getter,setter] = useState(false)
-
+  const [singleInput,setSingleInput]=useState('')
+  const [totalClaim,setTotalClaimed] = useState([{"totalClaimed":0}])
   const handleSubmit = async(e) => {
     e.preventDefault();
     // Handle submission logic here
@@ -81,13 +78,12 @@ const ICOPanel = () => {
   }, [getter]);
 
   const fetchParams=async()=>{
-    let result = await getParams(web3config.icoContractAddress);
-    console.log(result)
+    let result = await getParams(web3config.preIceContractAddress);
     setParams(result)
   }
   const fetchAllusersApi=async()=>{
     try{
-      const response = await axios.get(`${config.apiUrl}/getUsersListIco`); // Make GET request to the API endpoint
+      const response = await axios.get(`${config.apiUrl}/getUsersListPreIco`); // Make GET request to the API endpoint
       // Handle the response data here
       if(response.data.success){
         setStakeData(response.data.data)
@@ -105,19 +101,21 @@ const ICOPanel = () => {
     }
   }
 
+
   const findSingle=async(e) =>{
     setSingleInput(e.target.value);
   }
+
   const submitSingle=async(e)=>{
-    e.preventDefault();
-    const filteredData = stakeData.filter((data) =>
-    Object.values(data).some((val) =>
-      val.toString().toLowerCase().includes(singleInput.toLowerCase())
-    )
-    );
-    setStakeData2(filteredData)
-    setHideSingleUserTable(true)
-      }
+e.preventDefault();
+const filteredData = stakeData.filter((data) =>
+Object.values(data).some((val) =>
+  val.toString().toLowerCase().includes(singleInput.toLowerCase())
+)
+);
+setStakeData2(filteredData)
+setHideSingleUserTable(true)
+  }
   return (
     <>
       <div className="bg-center w-screen m-auto lg:pl-56 block p-4">
@@ -127,7 +125,7 @@ const ICOPanel = () => {
         <div className="max-w-7xl mx-auto flex justify-start items-start p-4 flex-col bg-white PageBG rounded-xl shadow-2xl">
           <div className="flex flex-row items-center justify-between">
             <h1 className="text-indigo-800 text-3xl font-medium m-3">
-              ICO Panel
+             Pre ICO Panel
             </h1>
           </div>
 
@@ -142,24 +140,24 @@ const ICOPanel = () => {
 
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
-                {params.length>0 &&  <div className="text-gray-400 text-sm">Current Rate stage  {params[0].stage}</div>}
+                <div className="text-gray-400 text-sm">Current Rate</div>
                 {/* <div className="text-gray-800 text-lg">25,34,000 LXM</div> */}
-               { params.length>0 && <div className="text-gray-800 text-lg">{params[0].rate} LXM</div>}
+                <div className="text-gray-800 text-lg">0.30 LXM</div>
 
               </div>
             </div>
 
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
-                <div className="text-gray-400 text-sm">ICO Sale Interval</div>
-                <div className="text-gray-800 text-lg">15 Days</div>
+                <div className="text-gray-400 text-sm">Start Date</div>
+                <div className="text-gray-800 text-lg">01 April 2024</div>
               </div>
             </div>
 
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
-                <div className="text-gray-400 text-sm">Gap Between Sale</div>
-                <div className="text-gray-800 text-lg">7 Days</div>
+                <div className="text-gray-400 text-sm">End Date</div>
+                <div className="text-gray-800 text-lg">10 April 2024</div>
               </div>
             </div>
 
@@ -187,12 +185,12 @@ const ICOPanel = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
+            {/* <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">Received</div>
                 <div className="text-gray-800 text-lg">4.56 MATIC</div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* </div> */}
@@ -201,7 +199,7 @@ const ICOPanel = () => {
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">ICO Contract</div>
-                {params.length>0 &&<div className="text-gray-800 text-lg">{params[0].laxmiBalance} LXM</div>}
+                {params.length>0 && <div className="text-gray-800 text-lg">{params[0].laxmiBalance} LXM</div>}
               </div>
               <div className="font-bold text-2xl p-4 rounded-full text-white Iconbg">
                 <FaSackDollar />
@@ -210,10 +208,10 @@ const ICOPanel = () => {
 
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
-                <div className="text-gray-400 text-sm">Total Investment</div>
-               {params.length>0 && <div className="text-gray-800 text-lg">
-                  {params[0].soldOutToken} LXM
-                </div>}
+                <div className="text-gray-400 text-sm">Total Sold Token</div>
+                <div className="text-gray-800 text-lg">
+                {params.length>0 && <div className="text-gray-800 text-lg">{params[0].soldOutToken} LXM</div>}
+                </div>
               </div>
               <div className="font-bold text-3xl p-3 rounded-full text-white Iconbg">
                 <RiArrowDownCircleFill />
@@ -223,7 +221,7 @@ const ICOPanel = () => {
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">Total Claimed</div>
-                { totalClaim.length>0 && <div className="text-gray-800 text-lg">{totalClaim[0].totalClaimed} LXM</div>}
+               { totalClaim.length>0 && <div className="text-gray-800 text-lg">{totalClaim[0].totalClaimed} LXM</div>}
               </div>
               <div className="font-bold text-3xl p-3 rounded-full text-white Iconbg">
                 <RiArrowUpCircleFill />
@@ -309,7 +307,7 @@ const ICOPanel = () => {
           <div className="w-full">
             <div className="flex flex-row items-center justify-between p-4 bg-gray-100 rounded-md w-full">
               <h1 className="text-indigo-800 text-xl font-medium my-3">
-                Get Single User ICO Data
+                Get Single User Pre ICO Data
               </h1>
               <div className="flex">
                 <input
@@ -332,21 +330,21 @@ const ICOPanel = () => {
               </div>
             </div>
             {hideSingleUserTable ? (
-              <IcoTable stakeData={stakeData2} />
+              <PreIcoTable stakeData={stakeData2} />
             ) : null}
           </div>
 
           <div>
             <h1 className="text-indigo-800 text-xl font-medium my-3">
-              All Users ICO History
+              All Users Pre ICO History
             </h1>
           </div>
 
-          <IcoTable stakeData={stakeData} />
+          <PreIcoTable stakeData={stakeData} />
         </div>
       </div>
     </>
   );
 };
 
-export default ICOPanel;
+export default PreICOPanel;

@@ -1,30 +1,78 @@
 import Web3 from "web3";
 import preIcoAbi from "./preIcoAbi.json";
+import icoAbi from "./icoAbi.json"
 import usdtAbi from "./usdtAbi.json";
+import laxmiAbi from "./laxmiAbi.json"
 import web3config from "./web3config";
 const web3 = new Web3();
-web3.setProvider(new web3.providers.HttpProvider("https://polygon-rpc.com"));
-// var web3 = new Web3(new Web3.providers.HttpProvider("https://polygon-mainnet.infura.io/75424779582248e9a2b625d4e3b5b576"));
+//web3.setProvider(new web3.providers.HttpProvider("https://polygon-rpc.com"));
+web3.setProvider(new web3.providers.HttpProvider("https://polygon-mumbai.blockpi.network/v1/rpc/public"));
 
 const preIcoContract = new web3.eth.Contract(
   preIcoAbi,
   web3config.preIceContractAddress
 );
-
-export const getParams = async () => {
+const icoContract = new web3.eth.Contract(
+  icoAbi,
+  web3config.icoContractAddress
+);
+const laxmiTokenContract = new web3.eth.Contract(
+  laxmiAbi,
+  web3config.lamxiContract
+);
+const usdtTokenContract = new web3.eth.Contract(
+  usdtAbi,
+  web3config.usdtContract
+);
+export const getParams = async (contractAddress) => {
   try {
-    const params = await preIcoContract.methods.getParams().call();
-    console.log(params);
-    let soldOutToken = parseInt(params.sold_out_token) / 10 ** 6;
+    let params
+    let usdtDecimals
+    let laxmitDecimals
+    let usdtBalance
+    let laxmiBalance
+    let soldOutToken;
+
+    let rate=0;
+    let stage=0;
+    if(contractAddress==web3config.preIceContractAddress){
+      params = await preIcoContract.methods.getParams().call();
+    }else{
+      params = await icoContract.methods.getParams().call();
+      let getStageAndRate=await icoContract.methods.getStageAndRate().call()
+      rate=parseInt(getStageAndRate.rate)
+        stage=parseInt(getStageAndRate.stage)/10**18
+    }
+  
+      usdtDecimals = await usdtTokenContract.methods.decimals().call();
+      laxmitDecimals = await laxmiTokenContract.methods.decimals().call();
+
+      usdtBalance = await usdtTokenContract.methods.balanceOf(contractAddress).call();
+
+
+      laxmiBalance = await laxmiTokenContract.methods.balanceOf(contractAddress).call();
+
+
+      usdtBalance = parseInt(usdtBalance) / 10 ** parseInt(usdtDecimals)
+      laxmiBalance = parseInt(laxmiBalance) / 10 ** parseInt(laxmitDecimals)
+
+      soldOutToken=parseInt(params.sold_out_token) / 10 ** 9;
+    
 
     let arr = [];
     let obj = {
       soldOutToken,
+      usdtBalance,
+      laxmiBalance,
+      rate,
+      stage
     };
     arr.push(obj);
+   
     return arr;
   } catch (error) {
     console.log(error);
+    return [];
   }
 };
 

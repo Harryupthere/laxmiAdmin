@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie'; // Import js-cookie library
+import toast, { Toaster } from "react-hot-toast";
+import config from "../../config";
+import axios from 'axios';
 const Users = () => {
   const navigate = useNavigate();
 
@@ -8,155 +11,190 @@ const Users = () => {
     if (loginStatus != 'true') {
       navigate('/')
     }
-  const initialData = [
-    {
-      id: 1,
-      username: "rahulcse022",
-      userWallet: "0x2A34....A3590",
-      introducerUsername: "sunny009",
-      introducerWallet: "0x2A34....A3590",
-    },
-    {
-      id: 2,
-      username: "john_doe",
-      userWallet: "0x4B67....C7913",
-      introducerUsername: "jane_smith",
-      introducerWallet: "0x8D91....E1234",
-    },
-    {
-      id: 3,
-      username: "alice123",
-      userWallet: "0x1F23....B5678",
-      introducerUsername: "bob456",
-      introducerWallet: "0x5G67....H9101",
-    },
-    {
-      id: 4,
-      username: "user_xyz",
-      userWallet: "0x9K12....L3456",
-      introducerUsername: "user_abc",
-      introducerWallet: "0x3M78....N9101",
-    },
-    {
-      id: 5,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 6,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 7,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 8,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 9,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 10,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 11,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 12,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 13,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 14,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 15,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 16,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 17,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 18,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 19,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 20,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-    {
-      id: 21,
-      username: "test_user",
-      userWallet: "0x7O23....P5678",
-      introducerUsername: "another_user",
-      introducerWallet: "0x6Q12....R9101",
-    },
-  ];
+    const [initialData, setInitialData] = useState([]);
+    const itemsPerPage = 5; // Number of items per page
+    const [currentPage, setCurrentPage] = useState(1); // Current page number
+    const [tableData, setTableData] = useState(
+      initialData.slice(0, itemsPerPage)
+    ); // Data for the current page
+  
+    const totalPages = Math.ceil(initialData.length / itemsPerPage);
+
+    useEffect(()=>{
+
+      fetchUserList()
+    },[])
+
+    const fetchUserList=async()=>{
+      try{
+        const response = await axios.get(`${config.apiUrl}/getUsersList`); // Make GET request to the API endpoint
+        // Handle the response data here
+        if(response.data.success){
+          setTableData(response.data.data)
+          setInitialData(response.data.data)
+          setCurrentPage(1);
+          const startIndex = ( 1) * itemsPerPage;
+          const endIndex = startIndex + itemsPerPage;
+          setTableData(response.data.data.slice(startIndex, endIndex));
+        };
+      }catch(error){
+        console.log(error)
+      }
+    }
+
+  
+
+  // const initialData = [
+  //   {
+  //     id: 1,
+  //     username: "rahulcse022",
+  //     userWallet: "0x2A34....A3590",
+  //     introducerUsername: "sunny009",
+  //     introducerWallet: "0x2A34....A3590",
+  //   },
+  //   {
+  //     id: 2,
+  //     username: "john_doe",
+  //     userWallet: "0x4B67....C7913",
+  //     introducerUsername: "jane_smith",
+  //     introducerWallet: "0x8D91....E1234",
+  //   },
+  //   {
+  //     id: 3,
+  //     username: "alice123",
+  //     userWallet: "0x1F23....B5678",
+  //     introducerUsername: "bob456",
+  //     introducerWallet: "0x5G67....H9101",
+  //   },
+  //   {
+  //     id: 4,
+  //     username: "user_xyz",
+  //     userWallet: "0x9K12....L3456",
+  //     introducerUsername: "user_abc",
+  //     introducerWallet: "0x3M78....N9101",
+  //   },
+  //   {
+  //     id: 5,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 6,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 7,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 8,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 9,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 10,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 11,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 12,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 13,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 14,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 15,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 16,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 17,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 18,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 19,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 20,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  //   {
+  //     id: 21,
+  //     username: "test_user",
+  //     userWallet: "0x7O23....P5678",
+  //     introducerUsername: "another_user",
+  //     introducerWallet: "0x6Q12....R9101",
+  //   },
+  // ];
+
+
 
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -184,13 +222,7 @@ const Users = () => {
     setTableData(filteredData);
   };
 
-  const itemsPerPage = 5; // Number of items per page
-  const [currentPage, setCurrentPage] = useState(1); // Current page number
-  const [tableData, setTableData] = useState(
-    initialData.slice(0, itemsPerPage)
-  ); // Data for the current page
 
-  const totalPages = Math.ceil(initialData.length / itemsPerPage);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -198,7 +230,31 @@ const Users = () => {
     const endIndex = startIndex + itemsPerPage;
     setTableData(initialData.slice(startIndex, endIndex));
   };
+  function epochToDateString(epoch) {
+    const months = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
 
+    // Multiply by 1000 to convert seconds to milliseconds
+    const date = new Date(epoch);
+    const day = date.getDate().toString().padStart(2, "0"); // Get the day and pad with 0 if necessary
+    const month = months[date.getMonth()]; // Get the month abbreviation from the months array
+    const year = date.getFullYear(); // Get the full year
+
+    return `${day}-${month}-${year}`;
+  }
+ 
   return (
     <div className="bg-center w-screen m-auto lg:pl-56 block p-4">
       <div className="max-w-7xl mx-auto flex justify-start items-start p-4 flex-col bg-white PageBG rounded-xl shadow-2xl">
@@ -242,8 +298,26 @@ const Users = () => {
             <table className="w-full">
               <thead className="text-md font-bold text-center">
                 <tr>
+
+      
+
                   <th className="bg-black/50 text-white py-3">S. No</th>
-                  <th className="bg-black/50 text-white py-3">Username</th>
+                  <th className="bg-black/50 text-white py-3">Name</th>
+                  <th className="bg-black/50 text-white py-3">Email</th>
+                  <th className="bg-black/50 text-white py-3">Address</th>
+                  {/* <th className="bg-black/50 text-white py-3">Referral Code</th> */}
+                  <th className="bg-black/50 text-white py-3">Modile Number</th>
+                  {/* <th className="bg-black/50 text-white py-3">Referral Id</th> */}
+                  <th className="bg-black/50 text-white py-3">PAN Number</th>
+                  <th className="bg-black/50 text-white py-3">Aadhar Number</th>
+                  <th className="bg-black/50 text-white py-3">Is KYC verified</th>
+                  {/* <th className="bg-black/50 text-white py-3">Wallet Address</th> */}
+                  <th className="bg-black/50 text-white py-3">Created At</th>
+
+
+
+{/* 
+
                   <th className="bg-black/50 text-white py-3">
                     User Wallet Address
                   </th>
@@ -252,18 +326,18 @@ const Users = () => {
                   </th>
                   <th className="bg-black/50 text-white py-3">
                     Introducer Wallet Address
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
 
               <tbody className="text-center">
-                {tableData.map((data) => (
+                {tableData.map((data,index) => (
                   <tr key={data.id}>
-                    <td className="py-3">{data.id}</td>
-                    <td className="py-3">{data.username}</td>
+                    <td className="py-3">{index+1}</td>
+                    <td className="py-3">{data.name}</td>
                     <td className="py-3">
-                      {data.userWallet}
-                      <span
+                      {data.email}
+                      {/* <span
                         className="ml-2 cursor-pointer"
                         onClick={() => copyToClipboard(data.userWallet)}
                       >
@@ -279,10 +353,19 @@ const Users = () => {
                             clipRule="evenodd"
                           />
                         </svg>
-                      </span>
+                      </span> */}
                     </td>
-                    <td className="py-3">{data.introducerUsername}</td>
-                    <td className="py-3">
+                    <td className="py-3">{data.street} {data.city} {data.state} {data.country}</td>
+                    {/* <td className="py-3">{data.referralCode}</td> */}
+                    <td className="py-3">{data.mobileNumber}</td>
+                    {/* <td className="py-3">{data.referralId}</td> */}
+                    <td className="py-3">{data.panNumber}</td>
+                    <td className="py-3">{data.aadharNumber}</td>
+                    <td className="py-3">{data.isKycVerified.toString()}</td>
+                    {/* <td className="py-3">{data.wallets}</td> */}
+                    <td className="py-3">{epochToDateString(data.createdAt)}</td>
+
+                    {/* <td className="py-3">
                       {data.introducerWallet}
                       <span
                         className="ml-2 cursor-pointer"
@@ -301,7 +384,7 @@ const Users = () => {
                           />
                         </svg>
                       </span>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>

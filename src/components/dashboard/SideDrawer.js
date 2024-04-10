@@ -5,7 +5,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import { BiMoneyWithdraw, BiLogOut } from "react-icons/bi";
 import { FaCoins } from "react-icons/fa";
 import { FaUser } from "react-icons/fa";
-import {  BiCoinStack } from "react-icons/bi";
+import {  BiCoinStack,BiCoin } from "react-icons/bi";
 import { LuPhoneCall } from "react-icons/lu";
 import Cookies from 'js-cookie'; // Import js-cookie library
 
@@ -104,7 +104,20 @@ navigate("/")
               </h1>
             </div>
           </Link>
-
+          <Link to="/dashboard/pre-ico-panel">
+            <div className="flex justify-start items-center p-4 text-white w-full nevs">
+              <BiCoin className="text-white text-2xl" />
+              
+              <h1
+                onClick={() => SetOpen(!open)}
+                className={`text-white ml-4 w-full font-semibold duration-1000 ${
+                  open === false ? "flex" : "hidden"
+                }`}
+              >
+                Pre ICO Panel
+              </h1>
+            </div>
+          </Link>
           <Link to="/dashboard/astro-panel">
             <div className="flex justify-start  items-center p-4 text-white   w-full nevs">
               <LuPhoneCall className="text-2xl" />

@@ -41,7 +41,7 @@ const ICOPanel = () => {
     e.preventDefault();
     // Handle submission logic here
     try{
-      let result = await withdrawToken(tokenAddress,walletAddress,tokenWithdrawAmount)
+      let result = await withdrawToken(web3config.icoContractAddress,tokenAddress,walletAddress,tokenWithdrawAmount)
       console.log(result)
       if(result.status){
         alert(result.msg)
@@ -60,7 +60,7 @@ const ICOPanel = () => {
     e.preventDefault();
     // Handle submission logic here
     try{
-      let result = await withdrawMatic(walletAddress2,tokenWithdrawAmount2)
+      let result = await withdrawMatic(web3config.icoContractAddress,walletAddress2,tokenWithdrawAmount2)
       console.log(result)
       if(result.status){
         alert(result.msg)

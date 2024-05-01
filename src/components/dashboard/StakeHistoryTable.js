@@ -31,30 +31,27 @@ const StakeHistoryTable = ({ stakeData }) => {
     setTableData(initialData.slice(startIndex, endIndex));
   };
 
-  function epochToDateString(epoch) {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
-
-    // Multiply by 1000 to convert seconds to milliseconds
-    const date = new Date(epoch);
-    const day = date.getDate().toString().padStart(2, "0"); // Get the day and pad with 0 if necessary
-    const month = months[date.getMonth()]; // Get the month abbreviation from the months array
-    const year = date.getFullYear(); // Get the full year
-
-    return `${day}-${month}-${year}`;
+  function epochToDateString(timestamp) {
+    // Convert timestamp to milliseconds
+    const milliseconds = timestamp * 1000;
+    const date = new Date(milliseconds);
+  
+    // Get date components
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+  
+    // Get time components
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+  
+    // Format date and time
+    const formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  
+    return formattedDateTime;
   }
+  
 
   useEffect(() => {
     setTableData(stakeData.slice(0, itemsPerPage));
@@ -107,19 +104,19 @@ const StakeHistoryTable = ({ stakeData }) => {
           <tbody className="w-full text-center">
             {tableData.map((data) => (
               <tr key={data.id}>
-                <td className="py-1 hover:bg-black/20 w-40">{data.username}</td>
+                <td className="py-1 hover:bg-black/20 w-40">{data.email}</td>
                 <td className="py-1 hover:bg-black/20 w-40">{data.duration}</td>
-                <td className="py-1 hover:bg-black/20 w-40">{data.stake}</td>
-                <td className="py-1 hover:bg-black/20 w-40">{data.roi}</td>
+                <td className="py-1 hover:bg-black/20 w-40">{data.amount}</td>
+                <td className="py-1 hover:bg-black/20 w-40">{data.Apr}</td>
                 <td className="py-1 hover:bg-black/20 w-40">
-                  {epochToDateString(data.stakedTime)}
+                  {epochToDateString(data.stakeTime)}
                 </td>
                 <td className="py-1 hover:bg-black/20 w-40">
-                  {epochToDateString(data.maturityTime)}
+                  {epochToDateString(parseInt(data.maturityTime)+parseInt(data.stakeTime))}
                 </td>
 
                 <td className="py-1 hover:bg-black/20 w-40">
-                  {data.status ? (
+                  {!data.claimed ? (
                     <span className="text-green-400">Running</span>
                   ) : (
                     <span className="text-red-400">Closed</span>

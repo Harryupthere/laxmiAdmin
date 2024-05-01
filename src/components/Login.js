@@ -40,8 +40,8 @@ setFormError({email:eError,password:pErorr})
 if(pErorr!="" || eError!=""){
   return
 }
-
-const response = await axios.post(`${config.apiUrl}login`, {
+console.log(`${config.apiUrl}login`)
+const response = await axios.post(`${config.apiUrl}/login`, {
  email:form.email,
  password:form.password
 });

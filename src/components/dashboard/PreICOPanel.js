@@ -38,7 +38,7 @@ const PreICOPanel = () => {
     e.preventDefault();
     // Handle submission logic here
     try{
-      let result = await withdrawToken(tokenAddress,walletAddress,tokenWithdrawAmount)
+      let result = await withdrawToken(web3config.preIceContractAddress,tokenAddress,walletAddress,tokenWithdrawAmount)
       console.log(result)
       if(result.status){
         alert(result.msg)

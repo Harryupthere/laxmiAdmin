@@ -27,6 +27,8 @@ const StakeTable = ({ stakeData }) => {
     return `${day}-${month}-${year}`;
   }
 
+
+  console.log(stakeData[0])
   return (
     <div className="w-full text-center border rounded-xl overflow-x-auto bg-white">
       <div className="my-3 w-[1200px]">

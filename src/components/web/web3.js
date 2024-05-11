@@ -443,9 +443,7 @@ export const reannounceOwnership = async (
   }
 };
 
-export const stakingParams = async (
-  
- ) => {
+export const stakingParams = async () => {
    try {
      if (!window.ethereum) {
        return { status: false, msg: "Please install metamask" };
@@ -461,3 +459,22 @@ export const stakingParams = async (
      return { status: false, msg: error };
    }
  };
+
+ export const dashboardParams = async () => {
+  try {
+    if (!window.ethereum) {
+      return { status: false, msg: "Please install metamask" };
+    }
+
+    let totalLxm = await laxmiTokenContract.methods.balanceOf(web3config.stakingContractAddres).call();
+    let totalLxmICO = await laxmiTokenContract.methods.balanceOf(web3config.icoContractAddress).call()
+    let decimasl = await laxmiTokenContract.methods.decimals().call()
+
+    totalLxm=(parseInt(totalLxm))/10**parseInt(decimasl);
+    totalLxmICO=(parseInt(totalLxmICO))/10**parseInt(decimasl);
+    return {status:true,data:[{staking:totalLxm,ico:totalLxmICO}]}
+  } catch (error) {
+    console.log(error);
+    return { status: false, msg: error };
+  }
+};

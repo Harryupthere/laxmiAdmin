@@ -6,9 +6,13 @@ import { FaSackDollar } from "react-icons/fa6";
 import { RiArrowDownCircleFill, RiArrowUpCircleFill } from "react-icons/ri";
 import { IoIosNotifications } from "react-icons/io";
 import data from "./data";
-import StakeTable from "./StakeTable";
+import StakeHistoryTable from "./StakeHistoryTable";import IcoTable from "./IcoTable"
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from 'js-cookie'; // Import js-cookie library
+import {dashboardParams} from "../web/web3";
+import web3config from "../web/web3config";
+import axios from 'axios';
+import config from "../../config";
 
 const NotificationModal = ({ isOpen, onClose, notifications }) => {
   return (
@@ -61,6 +65,7 @@ function Home() {
     }
   const [showModal, setShowModal] = useState(false);
   const [stakeData, setStakeData] = useState([]);
+  const [stakeData1, setStakeData1] = useState([]);
 
   useEffect(() => {
     setStakeData(data);
@@ -102,6 +107,63 @@ function Home() {
     },
   ]);
 
+
+  const [laxmi,setLaxmi] = useState([])
+  const [totalStakingAmount,setTotalStakingAmount]=useState(0)
+  const [totalUnstakedAmount,setTotalUnstakedAmount]=useState(0)
+  const [totalClaim,setTotalClaimed] = useState([{"totalClaimed":0}])
+
+  useEffect(()=>{
+getDashboardParams()
+fetchAllusersApi()
+getStakingDetals()
+  },[])
+
+  const getDashboardParams=async()=>{
+try{
+  let result = await dashboardParams()
+ if(result.status){
+  setLaxmi(result.data);
+
+ }
+}catch(error){
+  console.log(error)
+}
+  }
+  const getStakingDetals=async()=>{
+    try{
+      const response = await axios.get(`${config.apiUrl}/getStakingDetails`); // Make GET request to the API endpoint
+     console.log(response.data.data)
+      if(response.data.success){
+      setTotalStakingAmount(response.data.totalStakingAmount)
+setTotalUnstakedAmount(response.data.totalUnstakedAmount)
+setStakeData(response.data.data)
+     }
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+
+  const fetchAllusersApi=async()=>{
+    try{
+      const response = await axios.get(`${config.apiUrl}/getUsersListIco`); // Make GET request to the API endpoint
+      // Handle the response data here
+      if(response.data.success){
+        setStakeData1(response.data.data)
+        if(response.data.data.length<=0){
+          return
+        }
+        let totalClaimed=0
+        for(let i=0;i<response.data.data.length;i++){
+          totalClaimed=totalClaimed+ response.data.data[i].claimedToken
+        }
+        setTotalClaimed([{"totalClaimed":totalClaimed}])
+      };
+    }catch(error){
+      console.log(error)
+    }
+  }
   return (
     <>
       <div className="bg-center w-screen m-auto lg:pl-56 block p-4">
@@ -126,7 +188,7 @@ function Home() {
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">Staking Contract</div>
-                <div className="text-gray-800 text-lg">50,345.56 Laxmi-m</div>
+                {laxmi.length>0 && <div className="text-gray-800 text-lg">{laxmi[0].staking} Laxmi-m</div>}
               </div>
               <div className="font-bold text-2xl p-4 rounded-full text-white Iconbg">
                 <FaSackDollar />
@@ -135,7 +197,7 @@ function Home() {
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">ICO Contract</div>
-                <div className="text-gray-800 text-lg">1,20,890.90 Laxmi-m</div>
+                {laxmi.length>0 && <div className="text-gray-800 text-lg">{laxmi[0].ico} Laxmi-m</div>}
               </div>
               <div className="font-bold text-2xl p-4 rounded-full text-white Iconbg">
                 <FaCoins />
@@ -155,7 +217,7 @@ function Home() {
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">Total Deposit</div>
                 <div className="text-gray-800 text-lg">
-                  8,987,890.00 Laxmi-m
+                {totalStakingAmount} Laxmi-m
                 </div>
               </div>
               <div className="font-bold text-3xl p-3 rounded-full text-white Iconbg">
@@ -165,7 +227,7 @@ function Home() {
             <div className="flex justify-between items-center p-7  bg-gray-100 rounded-lg shadow-xl">
               <div className="flex justify-start items-start flex-col ">
                 <div className="text-gray-400 text-sm">Total Withdrawal</div>
-                <div className="text-gray-800 text-lg">2,34,560.30 Laxmi-m</div>
+                <div className="text-gray-800 text-lg">{totalUnstakedAmount} Laxmi-m</div>
               </div>
               <div className="font-bold text-3xl p-3 rounded-full text-white Iconbg">
                 <RiArrowUpCircleFill />
@@ -186,7 +248,7 @@ function Home() {
             </button>
           </div>
 
-          <StakeTable stakeData={stakeData} />
+          <StakeHistoryTable stakeData={stakeData} />
 
           <div className="flex justify-between w-full">
             <h1 className="text-indigo-800 text-xl font-medium my-3">
@@ -201,7 +263,7 @@ function Home() {
             </button>
           </div>
 
-          <StakeTable stakeData={stakeData} />
+          <IcoTable stakeData={stakeData1} />
 
           <div className="flex justify-between w-full">
             <h1 className="text-indigo-800 text-xl font-medium my-3">
@@ -216,7 +278,7 @@ function Home() {
             </button>
           </div>
 
-          <StakeTable stakeData={stakeData} />
+          <StakeHistoryTable                                   stakeData={stakeData} />
         </div>
       </div>
       <NotificationModal

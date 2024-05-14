@@ -13,6 +13,7 @@ import {dashboardParams} from "../web/web3";
 import web3config from "../web/web3config";
 import axios from 'axios';
 import config from "../../config";
+import PreIcoTable from "./PreIcoTable";
 
 const NotificationModal = ({ isOpen, onClose, notifications }) => {
   return (
@@ -66,6 +67,7 @@ function Home() {
   const [showModal, setShowModal] = useState(false);
   const [stakeData, setStakeData] = useState([]);
   const [stakeData1, setStakeData1] = useState([]);
+  const [stakeData2, setStakeData2] = useState([]);
 
   useEffect(() => {
     setStakeData(data);
@@ -117,6 +119,7 @@ function Home() {
 getDashboardParams()
 fetchAllusersApi()
 getStakingDetals()
+fetchAllusersApi2()
   },[])
 
   const getDashboardParams=async()=>{
@@ -159,6 +162,19 @@ setStakeData(response.data.data)
           totalClaimed=totalClaimed+ response.data.data[i].claimedToken
         }
         setTotalClaimed([{"totalClaimed":totalClaimed}])
+      };
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const fetchAllusersApi2=async()=>{
+    try{
+      const response = await axios.get(`${config.apiUrl}/getUsersListPreIco`); // Make GET request to the API endpoint
+      // Handle the response data here
+      if(response.data.success){
+        setStakeData2(response.data.data)
+       
       };
     }catch(error){
       console.log(error)
@@ -278,7 +294,7 @@ setStakeData(response.data.data)
             </button>
           </div>
 
-          <StakeHistoryTable                                   stakeData={stakeData} />
+          <PreIcoTable                                   stakeData={stakeData2} />
         </div>
       </div>
       <NotificationModal

@@ -20,7 +20,7 @@ const StakeHistoryTable = ({ stakeData }) => {
     );
 
     setTableData(filteredData);
-  };
+  };  
 
   const totalPages = Math.ceil(initialData.length / itemsPerPage);
 

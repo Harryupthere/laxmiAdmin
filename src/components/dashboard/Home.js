@@ -283,7 +283,7 @@ setStakeData(response.data.data)
 
           <div className="flex justify-between w-full">
             <h1 className="text-indigo-800 text-xl font-medium my-3">
-              Astro Talk Income
+              Pre ICO Investment
             </h1>
 
             <button
